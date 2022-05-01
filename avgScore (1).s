@@ -9,7 +9,7 @@ str2: .asciiz "Original scores: "
 str3: .asciiz "Sorted scores (in descending order): "
 str4: .asciiz "Enter the number of (lowest) scores to drop: "
 str5: .asciiz "Average (rounded up) with dropped scores removed: "
-
+space: .asciiz " "
 
 .text 
 
@@ -32,7 +32,8 @@ main:
 	move $s0, $v0	# $s0 = numScores
 	move $t0, $0
 	la $s1, orig	# $s1 = orig
-	la $s2, sorted	# $s2 = sorted
+	la $s2, sorted	# $s2 = sorted 
+	mul $s3 , $s0, 4
 loop_in:
 	li $v0, 4 
 	la $a0, str1 
@@ -53,6 +54,7 @@ loop_in:
 	syscall
 	move $a0, $s1	# More efficient than la $a0, orig
 	move $a1, $s0
+
 	jal printArray	# Print original scores
 	li $v0, 4 
 	la $a0, str3 
@@ -81,9 +83,38 @@ loop_in:
 # printList takes in an array and its size as arguments. 
 # It prints all the elements in one line with a newline at the end.
 printArray:
-	# Your implementation of printList here	
+	# Your implementation of printList here	\
+	#move $v0,$a0
+	#li $v0 , 1
+	#syscall
+	addi $s0, $zero, 20
+	addi $t4, $zero, 0
+	
+	while:
+	
+	beq $t4,$s0, exit
+	lw $t6, orig($t4)
+	addi $t4,$t4,4
 
-	jr $ra
+	#print current number
+	li $v0,1 
+	move $a0, $t6
+	syscall
+
+	# add space
+	li $v0 , 4
+	la $a0, space
+	syscall
+	
+	j while
+
+
+	exit : # kills loops
+	
+	
+		jr $ra
+
+
 	
 	
 # selSort takes in the number of scores as argument. 
@@ -91,8 +122,7 @@ printArray:
 selSort:
 	# Your implementation of selSort here
 	
-	jr $ra
-	
+
 	
 # calcSum takes in an array and its size as arguments.
 # It RECURSIVELY computes and returns the sum of elements in the array.
