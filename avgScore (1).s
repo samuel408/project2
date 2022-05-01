@@ -56,12 +56,13 @@ loop_in:
 	syscall
 	move $a0, $s1	# More efficient than la $a0, orig
 	move $a1, $s0
-
+	addi $a3,$zero,0 # 
 	jal printArray	# Print original scores
 	li $v0, 4 
 	la $a0, str3 
 	syscall 
 	move $a0, $s2	# More efficient than la $a0, sorted
+	addi $a3, $zero,1
 	jal printArray	# Print sorted scores
 	
 	li $v0, 4 
@@ -90,9 +91,10 @@ printArray:
 	#addi $s3, $zero, 20
 	addi $t4, $zero, 0
 	
+	bne $a3,$zero, sortedPrint
 	while:
 	
-	beq $t4,$s3, exit
+ 	beq $t4,$s3, exit
 	lw $t6, orig($t4)
 	addi $t4,$t4,4
 
@@ -107,6 +109,27 @@ printArray:
 	syscall
 	
 	j while
+	
+	sortedPrint:
+	While:
+	
+ 	beq $t4,$s3, exit
+	lw $t6, sorted($t4)
+	addi $t4,$t4,4
+
+	#print current number
+	li $v0,1 
+	move $a0, $t6
+	syscall
+
+	# add space
+	li $v0 , 4
+	la $a0, space
+	syscall
+	
+	j While
+	
+	
 
 
 	exit : # kills loops
