@@ -34,6 +34,8 @@ main:
 	la $s1, orig	# $s1 = orig
 	la $s2, sorted	# $s2 = sorted 
 	mul $s3 , $s0, 4
+
+	
 loop_in:
 	li $v0, 4 
 	la $a0, str1 
@@ -84,15 +86,13 @@ loop_in:
 # It prints all the elements in one line with a newline at the end.
 printArray:
 	# Your implementation of printList here	\
-	#move $v0,$a0
-	#li $v0 , 1
-	#syscall
-	addi $s0, $zero, 20
+	
+	#addi $s3, $zero, 20
 	addi $t4, $zero, 0
 	
 	while:
 	
-	beq $t4,$s0, exit
+	beq $t4,$s3, exit
 	lw $t6, orig($t4)
 	addi $t4,$t4,4
 
