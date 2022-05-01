@@ -9,7 +9,8 @@ str2: .asciiz "Original scores: "
 str3: .asciiz "Sorted scores (in descending order): "
 str4: .asciiz "Enter the number of (lowest) scores to drop: "
 str5: .asciiz "Average (rounded up) with dropped scores removed: "
-
+space: .asciiz " "
+newline: .asciiz "\n"
 
 .text 
 
@@ -32,7 +33,10 @@ main:
 	move $s0, $v0	# $s0 = numScores
 	move $t0, $0
 	la $s1, orig	# $s1 = orig
-	la $s2, sorted	# $s2 = sorted
+	la $s2, sorted	# $s2 = sorted 
+	mul $s3 , $s0, 4 # Number of bytes we need determined by the user
+
+	
 loop_in:
 	li $v0, 4 
 	la $a0, str1 
@@ -53,11 +57,13 @@ loop_in:
 	syscall
 	move $a0, $s1	# More efficient than la $a0, orig
 	move $a1, $s0
+	addi $a3,$zero,0 # 
 	jal printArray	# Print original scores
 	li $v0, 4 
 	la $a0, str3 
 	syscall 
 	move $a0, $s2	# More efficient than la $a0, sorted
+	addi $a3, $zero, 1
 	jal printArray	# Print sorted scores
 	
 	li $v0, 4 
@@ -72,6 +78,7 @@ loop_in:
 	
 	# Your code here to compute average and print it
 	
+	
 	lw $ra, 0($sp)
 	addi $sp, $sp 4
 	li $v0, 10 
@@ -81,9 +88,58 @@ loop_in:
 # printList takes in an array and its size as arguments. 
 # It prints all the elements in one line with a newline at the end.
 printArray:
-	# Your implementation of printList here	
+	# Your implementation of printList here	\
+	
+	#addi $s3, $zero, 20
+	addi $t4, $zero, 0
+	
+	bne $a3, $zero, sortedPrint
+	
+while:
+ 	beq $t4, $s3, exit
+	lw $t6, orig($t4)
+	addi $t4, $t4, 4
 
+	#print current number
+	li $v0,1 
+	move $a0, $t6
+	syscall
+
+	# add space
+	li $v0 , 4
+	la $a0, space
+	syscall
+	
+	j while
+	
+sortedPrint:
+While:
+	
+ 	beq $t4,$s3, exit
+	lw $t6, sorted($t4)
+	addi $t4,$t4,4
+
+	#print current number
+	li $v0, 1 
+	move $a0, $t6
+	syscall
+
+	# add space
+	li $v0 , 4
+	la $a0, space
+	syscall
+	
+	j While
+	
+exit :
+	# Print new line after program finishes printing the array
+	li $v0, 4 
+	la $a0, newline 
+	syscall 
 	jr $ra
+	
+
+
 	
 	
 # selSort takes in the number of scores as argument. 
@@ -91,14 +147,18 @@ printArray:
 selSort:
 	# Your implementation of selSort here
 	
-	jr $ra
 	
+
 	
 # calcSum takes in an array and its size as arguments.
 # It RECURSIVELY computes and returns the sum of elements in the array.
 # Note: you MUST NOT use iterative approach in this function.
 calcSum:
+	mul $t5, 
 	# Your implementation of calcSum here
+	bgt $t5, $s0, finalsum
+	
+	
+finalsum:
 	
 	jr $ra
-	
