@@ -144,6 +144,47 @@ printArray:
 # It performs SELECTION sort in descending order and populates the sorted array
 selSort:
 	# Your implementation of selSort here
+	addi $t4, $zero, 0 #set $t4 to 0 
+	addi $t7, $s3,-4 # length-1  
+	
+	matchArr: # coppies orginal array into sorted  array to be able to sort
+	beq $t4,$s3, sort
+	lw $t6, orig($t4)
+	sw $t6, sorted($t4)
+	addi $t4,$t4,4
+	
+	j matchArr
+	
+sort:
+	jr $ra
+	
+	addi $t4, $zero, 0 #set $t4 to 0
+
+	
+
+	
+	
+	
+	
+	
+	Exit : # kills loops
+	
+	
+		jr $ra
+
+	
+	
+	
+		
+
+	
+	
+	
+	
+	
+	
+	
+	
 	
 
 	
