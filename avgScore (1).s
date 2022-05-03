@@ -10,6 +10,7 @@ str3: .asciiz "Sorted scores (in descending order): "
 str4: .asciiz "Enter the number of (lowest) scores to drop: "
 str5: .asciiz "Average (rounded up) with dropped scores removed: "
 space: .asciiz " "
+check: .asciiz "WE WORK "
 
 .text 
 
@@ -148,45 +149,66 @@ selSort:
 	addi $t7, $s3,-4 # length-1  
 	
 	matchArr: # coppies orginal array into sorted  array to be able to sort
-	beq $t4,$s3, sort
+	beq $t4,$s3, forLoop # calls loop
 	lw $t6, orig($t4)
 	sw $t6, sorted($t4)
 	addi $t4,$t4,4
 	
 	j matchArr
 	
-sort:
-	jr $ra
-	
-	addi $t4, $zero, 0 #set $t4 to 0
+addi $t4, $zero, 0 #set $t4 to 0  i =0
+addi $t0 , $t4, 4#j = i +1
 
-	
 
+     
+     
+     	forLoop:
+		 beq $t4, $s3,Exit
+        	lw $t6, sorted($t4) #set $t4 to 0  also holds i	//int maxIndex = i;
+        	j nestedLoop
+        	
+
+     		
+     		
+
+     	
+     	
+     	nestedLoop:
+     	     		beq $t0, $t7,swap
+     	     		lw $t1, sorted($t0)#holds sorted[j]
+     	     		lw $t2, sorted($t6)# holds sorted[maxindex]
+     	     		bgt $t1,$t2, newMax
+     	     		
+     	newMax: 
+     	move $t6, $t0
+     	addi $t0,$t0,4 #j++
+     	j nestedLoop	   
+     	
+     
+       swap:
+       move $t3,$t2 #temp = sorted[maxIndex];
+       lw $t5, sorted($t4)#holds sorted[i]
+       sw $t5, sorted($t6)# sorted[maxIndex] = sorted[i];
+       sw $t3, sorted ($t4) #  sorted[i] = temp;
+
+
+         addi $t4,$t4,4#i++
+         
+          j forLoop  		
+     
 	
 	
-	
-	
+	 
 	
 	Exit : # kills loops
+	jr $ra
+	
+      # check
+	#li $v0 , 4
+	#la $a0, check
+	#syscall
 	
 	
-		jr $ra
-
-	
-	
-	
-		
-
-	
-	
-	
-	
-	
-	
-	
-	
-	
-
 	
 # calcSum takes in an array and its size as arguments.
 # It RECURSIVELY computes and returns the sum of elements in the array.
