@@ -157,30 +157,31 @@ selSort:
 	j matchArr
 	
 addi $t4, $zero, 0 #set $t4 to 0  i =0
-addi $t0 , $t4, 4#j = i +1
+ addi $t0 , $t4, 4#j = i +1 
 
-
-     
-     
      	forLoop:
-		 beq $t4, $s3,Exit
-        	lw $t6, sorted($t4) #set $t4 to 0  also holds i	//int maxIndex = i;
-        	j nestedLoop
-        	
 
-     		
-     		
 
+		 beq  $t4, $t7,Exit
+        	addi $t6, $t4, 0#set $t4 to 0  also holds i	//int maxIndex = i;
      	
      	
      	nestedLoop:
-     	     		beq $t0, $t7,swap
+     	# add space
+	li $v0 , 4
+	la $a0, check
+	syscall
+
+     			beq $t0, $s3,swap
      	     		lw $t1, sorted($t0)#holds sorted[j]
      	     		lw $t2, sorted($t6)# holds sorted[maxindex]
      	     		bgt $t1,$t2, newMax
+     	     		addi $t0,$t0,4 #j++
+     	     		j nestedLoop
+     	     		
      	     		
      	newMax: 
-     	move $t6, $t0
+     	addi $t6, $t0,0
      	addi $t0,$t0,4 #j++
      	j nestedLoop	   
      	
@@ -193,6 +194,7 @@ addi $t0 , $t4, 4#j = i +1
 
 
          addi $t4,$t4,4#i++
+         addi $t0 , $t4, 4#j = i +1 
          
           j forLoop  		
      
