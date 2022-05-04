@@ -146,7 +146,8 @@ printArray:
 selSort:
 	# Your implementation of selSort here
 	addi $t4, $zero, 0 #set $t4 to 0 
-	addi $t7, $s3,-4 # length-1  
+	addi $t7, $s0,4 # length-1  
+	mul $t7, $t7,4
 	
 	matchArr: # coppies orginal array into sorted  array to be able to sort
 	beq $t4,$s3, forLoop # calls loop
@@ -158,21 +159,26 @@ selSort:
 	
 addi $t4, $zero, 0 #set $t4 to 0  i =0
  addi $t0 , $t4, 4#j = i +1 
+ 
 
      	forLoop:
+     	  
 
 
-		 beq  $t4, $t7,Exit
+		 bge  $t4, $t7,Exit
         	addi $t6, $t4, 0#set $t4 to 0  also holds i	//int maxIndex = i;
+        	 addi $t0 , $t4, 4#j = i +1 
+        	# mul $t0, $t0, 4
      	
      	
      	nestedLoop:
-     	# add space
+     	
+#check
 	li $v0 , 4
 	la $a0, check
 	syscall
 
-     			beq $t0, $s3,swap
+     			bge $t0, $s3,swap
      	     		lw $t1, sorted($t0)#holds sorted[j]
      	     		lw $t2, sorted($t6)# holds sorted[maxindex]
      	     		bgt $t1,$t2, newMax
@@ -181,20 +187,28 @@ addi $t4, $zero, 0 #set $t4 to 0  i =0
      	     		
      	     		
      	newMax: 
+     
+	
      	addi $t6, $t0,0
      	addi $t0,$t0,4 #j++
      	j nestedLoop	   
      	
      
        swap:
+       
+	  	
+	 addi $t4,$t4,4#i++
+	 bge $t4 ,$t7, forLoop
+	 addi $t4,$t4,-4#i--
+
        move $t3,$t2 #temp = sorted[maxIndex];
+
        lw $t5, sorted($t4)#holds sorted[i]
        sw $t5, sorted($t6)# sorted[maxIndex] = sorted[i];
        sw $t3, sorted ($t4) #  sorted[i] = temp;
 
 
          addi $t4,$t4,4#i++
-         addi $t0 , $t4, 4#j = i +1 
          
           j forLoop  		
      
