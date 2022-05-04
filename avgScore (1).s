@@ -148,6 +148,7 @@ selSort:
 	addi $t4, $zero, 0 #set $t4 to 0 
 	addi $t7, $s0,4 # length-1  
 	mul $t7, $t7,4
+
 	
 	matchArr: # coppies orginal array into sorted  array to be able to sort
 	beq $t4,$s3, forLoop # calls loop
@@ -172,22 +173,33 @@ addi $t4, $zero, 0 #set $t4 to 0  i =0
      	
      	
      	nestedLoop:
-     	
-#check
-	li $v0 , 4
-	la $a0, check
-	syscall
+     	  	#check
+	#li $v0 , 4
+	#la $a0, check
+	#syscall
 
      			bge $t0, $s3,swap
-     	     		lw $t1, sorted($t0)#holds sorted[j]
-     	     		lw $t2, sorted($t6)# holds sorted[maxindex]
-     	     		bgt $t1,$t2, newMax
-     	     		addi $t0,$t0,4 #j++
+     			lw $t1, sorted($t0)#holds sorted[j]
+     			lw $t2, sorted($t6)# holds sorted[maxindex]
+			bge $t1,$t2, nestedLoop
+     			addi $t0,$t0,4 #j
+     	     		
      	     		j nestedLoop
      	     		
      	     		
      	newMax: 
      
+	  	#check
+	li $v0 , 4
+	la $a0, check
+	syscall
+	
+	#lw $t1, sorted($t0)#holds sorted[j]
+     	#lw $t2, sorted($t6)# holds sorted[maxindex]
+     	
+     	#addi $t0,$t0,4 #j++
+     	#ble $t1,$t2, nestedLoop
+     	#addi $t0,$t0,4 #j--
 	
      	addi $t6, $t0,0
      	addi $t0,$t0,4 #j++
@@ -196,8 +208,9 @@ addi $t4, $zero, 0 #set $t4 to 0  i =0
      
        swap:
        
-	  	
-	 addi $t4,$t4,4#i++
+	
+
+	addi $t4,$t4,4#i++
 	 bge $t4 ,$t7, forLoop
 	 addi $t4,$t4,-4#i--
 
@@ -209,6 +222,7 @@ addi $t4, $zero, 0 #set $t4 to 0  i =0
 
 
          addi $t4,$t4,4#i++
+
          
           j forLoop  		
      
