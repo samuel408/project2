@@ -167,17 +167,17 @@ addi $t4, $zero, 0 #set $t4 to 0  i =0
 	
      	forLoop:
      	  #check
-	li $v0 , 1
-	move $a0, $t4
-	syscall
+	#li $v0 , 1
+	#move $a0, $t4
+	#syscall
 	#check
-	li $v0 , 4
-	la $a0, check
-	syscall
+	#li $v0 , 4
+	#la $a0, check
+	#syscall
 	#check
-	li $v0 , 1
-	move $a0, $t7
-	syscall
+	#li $v0 , 1
+	#move $a0, $t7
+	#syscall
 
 	
 
@@ -197,6 +197,7 @@ addi $t4, $zero, 0 #set $t4 to 0  i =0
 	
 
      			bge $t0, $s3,swap
+
      			lw $t1, sorted($t0)#holds sorted[j]
      			lw $t2, sorted($t6)# holds sorted[maxindex]
 			bgt $t1,$t2, newMax
@@ -213,7 +214,7 @@ addi $t4, $zero, 0 #set $t4 to 0  i =0
      	#lw $t2, sorted($t6)# holds sorted[maxindex]
      	
      	
-     	move $t6, $t0
+     	addi $t6, $t0,0
      	addi $t0,$t0,4 #j++
      	j nestedLoop	   
      	
@@ -226,7 +227,7 @@ addi $t4, $zero, 0 #set $t4 to 0  i =0
 	# bge $t4 ,$t7, forLoop
 	 #addi $t4,$t4,-4#i--
 
-       move $t3,$t2 #temp = sorted[maxIndex];
+       addi $t3,$t2,0 #temp = sorted[maxIndex];
 
        lw $t5, sorted($t4)#holds sorted[i]
        sw $t5, sorted($t6)# sorted[maxIndex] = sorted[i];
@@ -235,7 +236,7 @@ addi $t4, $zero, 0 #set $t4 to 0  i =0
 
          addi $t4,$t4,4#i++
 
-        
+         
           j forLoop  		
      
 	
