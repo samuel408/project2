@@ -159,60 +159,72 @@ selSort:
 	j matchArr
 	
 addi $t4, $zero, 0 #set $t4 to 0  i =0
- addi $t0 , $t4, 4#j = i +1 
+  addi $a2 , $zero, 0#same as i
+ addi $t0 , $zero, 4#j = i +1 
  
-
+#check
+	
+	
      	forLoop:
-     	  
+     	  #check
+	li $v0 , 1
+	move $a0, $t4
+	syscall
+	#check
+	li $v0 , 4
+	la $a0, check
+	syscall
+	#check
+	li $v0 , 1
+	move $a0, $t7
+	syscall
 
+	
 
-		 bge  $t4, $t7,Exit
+		 beq $t4, $t7,Exit
         	addi $t6, $t4, 0#set $t4 to 0  also holds i	//int maxIndex = i;
-        	 addi $t0 , $t4, 4#j = i +1 
-        	# mul $t0, $t0, 4
+        	 addi $a2,$a2,4
+        	 addi $t0 , $a2, 0#j reset to i + 1
+        	#addi $t0 , $t4,4 #j reset to i + 1
+
      	
      	
      	nestedLoop:
-     	  	#check
-	#li $v0 , 4
-	#la $a0, check
-	#syscall
+     	
+     	#check
+	
+     	
+	
 
      			bge $t0, $s3,swap
      			lw $t1, sorted($t0)#holds sorted[j]
      			lw $t2, sorted($t6)# holds sorted[maxindex]
-			bge $t1,$t2, nestedLoop
-     			addi $t0,$t0,4 #j
+			bgt $t1,$t2, newMax
+     			addi $t0,$t0,4 #j++
      	     		
      	     		j nestedLoop
      	     		
      	     		
      	newMax: 
      
-	  	#check
-	li $v0 , 4
-	la $a0, check
-	syscall
+	  
 	
 	#lw $t1, sorted($t0)#holds sorted[j]
      	#lw $t2, sorted($t6)# holds sorted[maxindex]
      	
-     	#addi $t0,$t0,4 #j++
-     	#ble $t1,$t2, nestedLoop
-     	#addi $t0,$t0,4 #j--
-	
-     	addi $t6, $t0,0
+     	
+     	move $t6, $t0
      	addi $t0,$t0,4 #j++
      	j nestedLoop	   
      	
      
        swap:
-       
+
 	
 
-	addi $t4,$t4,4#i++
-	 bge $t4 ,$t7, forLoop
-	 addi $t4,$t4,-4#i--
+	#addi $t4,$t4,4#i++
+	# bge $t4 ,$t7, forLoop
+	 #addi $t4,$t4,-4#i--
 
        move $t3,$t2 #temp = sorted[maxIndex];
 
@@ -223,7 +235,7 @@ addi $t4, $zero, 0 #set $t4 to 0  i =0
 
          addi $t4,$t4,4#i++
 
-         
+        
           j forLoop  		
      
 	
