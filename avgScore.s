@@ -34,7 +34,7 @@ main:
 	move $t0, $0
 	la $s1, orig	# $s1 = orig
 	la $s2, sorted	# $s2 = sorted 
-	mul $s3 , $s0, 4 # Number of bytes we need determined by the user
+	#mul $s3 , $s0, 4 # Number of bytes we need determined by the user
 
 	
 loop_in:
@@ -57,8 +57,9 @@ loop_in:
 	syscall
 	move $a0, $s1	# More efficient than la $a0, orig
 	move $a1, $s0
-	addi $a3,$zero,0 # 
+	addi $a3, $zero, 0 # 
 	jal printArray	# Print original scores
+	
 	li $v0, 4 
 	la $a0, str3 
 	syscall 
@@ -71,13 +72,18 @@ loop_in:
 	syscall 
 	li $v0, 5	# Read the number of (lowest) scores to drop
 	syscall
+
 	move $a1, $v0
 	sub $a1, $s0, $a1	# numScores - drop
 	move $a0, $s2
 	jal calcSum	# Call calcSum to RECURSIVELY compute the sum of scores that are not dropped
 	
 	# Your code here to compute average and print it
-	
+	#move $a0, $v0 #save the return value in a0
+	#add $v0, $v0, 0
+	#li $v0, 1
+	#move $a0, $v0
+	#syscall 
 	
 	lw $ra, 0($sp)
 	addi $sp, $sp 4
@@ -87,56 +93,83 @@ loop_in:
 	
 # printList takes in an array and its size as arguments. 
 # It prints all the elements in one line with a newline at the end.
+	
 printArray:
-	# Your implementation of printList here	\
+	move $t7, $a0 # Storing a0(address of the array) into a temporary register
+	li $t0, 0 # Using t0 for i
 	
-	#addi $s3, $zero, 20
-	addi $t4, $zero, 0
-	
-	bne $a3, $zero, sortedPrint
-	
-while:
- 	beq $t4, $s3, exit
-	lw $t6, orig($t4)
-	addi $t4, $t4, 4
+printloop:
+	bge $t0, $a1, exit_printloop #if i >= length of array stop the loop
 
-	#print current number
-	li $v0,1 
-	move $a0, $t6
-	syscall
-
-	# add space
-	li $v0 , 4
-	la $a0, space
-	syscall
+	lw $t5, ($t7) #load content of array at t7 index
+	addi $t7, $t7, 4 #increment counter by 4
 	
-	j while
-	
-sortedPrint:
-While:
-	
- 	beq $t4,$s3, exit
-	lw $t6, sorted($t4)
-	addi $t4,$t4,4
-
-	#print current number
+	#print number
 	li $v0, 1 
-	move $a0, $t6
+	move $a0, $t5
 	syscall
-
-	# add space
+	# print space
 	li $v0 , 4
 	la $a0, space
 	syscall
 	
-	j While
+	addi $t0, $t0, 1 #increase i by 1
 	
-exit :
+	j printloop
+	
+
+exit_printloop:
 	# Print new line after program finishes printing the array
 	li $v0, 4 
 	la $a0, newline 
 	syscall 
+	
 	jr $ra
+	
+	# Your implementation of printList here	\
+	
+	#addi $s3, $zero, 20
+	#addi $t4, $zero, 0
+	
+	#bne $a3, $zero, sortedPrint
+	
+#while:
+ 	#beq $t4, $s3, exit
+	#lw $t6, orig($t4)
+	#addi $t4, $t4, 4
+
+	#print current number
+	#li $v0,1 
+	#move $a0, $t6
+	#syscall
+
+	# print space
+	#li $v0 , 4
+	#la $a0, space
+	#syscall
+	
+	#j while
+	
+#sortedPrint:
+#While:
+	
+ 	#beq $t4,$s3, exit
+	#lw $t6, sorted($t4)
+	#addi $t4,$t4,4
+
+	#print current number
+	#li $v0, 1 
+	#move $a0, $t6
+	#syscall
+
+	# add space
+	#li $v0 , 4
+	#la $a0, space
+	#syscall
+	
+	#j While
+	
+
 	
 
 
@@ -147,18 +180,66 @@ exit :
 selSort:
 	# Your implementation of selSort here
 	
-	
+	jr $ra
 
 	
 # calcSum takes in an array and its size as arguments.
 # It RECURSIVELY computes and returns the sum of elements in the array.
 # Note: you MUST NOT use iterative approach in this function.
-calcSum:
-	mul $t5, 
+calcSum:  
+	#addi $sp, $sp, -100
+	#sw $s0, 0($sp)    # save s0 because we overwrite it
+        #sw $ra, 4($sp)    # save $ra because jal overwrites it
+
+	#beq $a1, $zero, basecase
+	#addi $t0, $a1, -1
+	#sll $t0, $t0, 2
+	#add $t0, $t0, $a0
+	#lw $s0, 0($t0)       # s0 = sorted[size-1]
+	#addi $a1, $a1, -1    # set arguments
+	#jal calcSum          # call calcSum(arr, size - 1)
+	
+	#add $s0, $v0, $s0   # s0 = s0 + sum(arr,size-1)
+	#move $v0, $s0        # put result in v0
+	
+	#j sum_end
+
+#basecase: 
+	#add $v0, $zero, 0   # put result in v0
+
+#sum_end: 
+	#lw $s0, 0($sp)    # restore $s0
+	#lw $ra, 4($sp)      # restore $ra
+	#addi $sp, $sp, 100
+	#jr $ra
+	#move $t5, $s0 # Use t5 for len
+	#mul $t5, $t5, 4 #size in bytes
+	
+	#slt $t6, $t5, $zero 
+	#beq $t5, $t6, finalsum
+
+	#addi $t5, $t5, -4
+	
+	
+	#j calcSum
+	#li $v0, 1
+	#move $a0, $t5
+	#syscall
 	# Your implementation of calcSum here
-	bgt $t5, $s0, finalsum
+	#bgt $t5, $s0, finalsum
 	
+	#li $t5, 5          # this is my representation of "i"
+	#la $t6, orig
 	
-finalsum:
+	#mul $t7, $t7, 4    # scale by 4
+	#addu $t7, $t7, $t6 # add offset and base together
+	#lw $t7, ($t7)      # fetch the data
 	
+	#li $v0,1 
+	#move $a0, $t7
+	#syscall
+	
+#finalsum:
+	#li $v0, 10
+	#syscall 
 	jr $ra
