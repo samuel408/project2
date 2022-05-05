@@ -34,8 +34,6 @@ main:
 	move $t0, $0
 	la $s1, orig	# $s1 = orig
 	la $s2, sorted	# $s2 = sorted 
-	#mul $s3 , $s0, 4 # Number of bytes we need determined by the user
-
 	
 loop_in:
 	li $v0, 4 
@@ -75,7 +73,7 @@ loop_in:
 
 	move $a1, $v0
 	sub $a1, $s0, $a1	# numScores - drop
-	move $a0, $s2
+	move $a0, $s1 #CHANGE BACK TO S2
 	jal calcSum	# Call calcSum to RECURSIVELY compute the sum of scores that are not dropped
 	
 	# Your code here to compute average and print it
