@@ -55,14 +55,14 @@ loop_in:
 	syscall
 	move $a0, $s1	# More efficient than la $a0, orig
 	move $a1, $s0
-	addi $a3, $zero, 0 # 
+	#addi $a3, $zero, 0 # 
 	jal printArray	# Print original scores
 	
 	li $v0, 4 
 	la $a0, str3 
 	syscall 
 	move $a0, $s2	# More efficient than la $a0, sorted
-	addi $a3, $zero, 1
+	#addi $a3, $zero, 1
 	jal printArray	# Print sorted scores
 	
 	li $v0, 4 
@@ -95,8 +95,11 @@ loop_in:
 printArray:
 	move $t7, $a0 # Storing a0(address of the array) into a temporary register
 	li $t0, 0 # Using t0 for i
+	#move $t5, $s0
+	#beq $t5, $zero, zero
 	
 printloop:
+	#beq $s0, $zero, zero
 	bge $t0, $a1, exit_printloop #if i >= length of array stop the loop
 
 	lw $t5, ($t7) #load content of array at t7 index
@@ -114,7 +117,11 @@ printloop:
 	addi $t0, $t0, 1 #increase i by 1
 	
 	j printloop
-	
+
+#zero:
+	#li $v0, 10
+	#syscall
+	#jr $ra
 
 exit_printloop:
 	# Print new line after program finishes printing the array
@@ -185,6 +192,42 @@ selSort:
 # It RECURSIVELY computes and returns the sum of elements in the array.
 # Note: you MUST NOT use iterative approach in this function.
 calcSum:  
+	#a0 = s1 = address of sorted array
+	#a1 = numScores - drop
+	
+	#t0 is a counter
+	#t7 is an index(address)
+	
+	li $t0, 0 #use t0 for the counter
+	move $t3, $a0 #use t7 for the address off array
+	move $t6, $a1 #use t6 for the length
+	
+	#printed length
+	#li $v0, 1
+	#move $a0, $t6
+	#syscall 
+#function: 
+
+	#if length <= 0 return 0
+	#else call recursion with arr and (len - 1) + the current value arr[len-1]
+	#jump to basecase if x=0
+	#returns the sum of elements in the argument array
+	#addi $t6, $t6, -1
+	
+	#ble $t6, $zero, basecase
+	
+recur:
+	beq $t0, $t6, 
+	lw $t2, ($t3) #load content of array at t7 index
+	addi $t3, $t3, 4 #increment counter by 4
+	
+	li $v0, 1
+	move $a0, $t2
+	syscall 
+	
+	j recur
+	
+	
 	#addi $sp, $sp, -100
 	#sw $s0, 0($sp)    # save s0 because we overwrite it
         #sw $ra, 4($sp)    # save $ra because jal overwrites it
@@ -202,8 +245,13 @@ calcSum:
 	
 	#j sum_end
 
-#basecase: 
-	#add $v0, $zero, 0   # put result in v0
+basecase: 
+	#addi $v0, $zero, 0   # put result in v0
+	li $v0, 1
+	move $a0, $0
+	syscall 
+	
+	jr $ra
 
 #sum_end: 
 	#lw $s0, 0($sp)    # restore $s0
