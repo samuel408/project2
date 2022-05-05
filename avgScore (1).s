@@ -208,17 +208,12 @@ sort:
 move $t0, $zero #set $t0 to 0  i =0
       move $s3,$a2 # restoring s3 to original value
       oFor:
-li $v0, 4 
-	la $a0, check1 
-	syscall 
-	
+
 	addi $t1,$t0,1 #j =i+1
 	move  $t5,$t0#max stored
 	
 	innerFor:
-	li $v0, 4 
-	la $a0, check2 
-	syscall 
+	
 	###
 	sll $t6,$t0,2
 	sll $t7,$t1,2
@@ -233,9 +228,7 @@ li $v0, 4
 	# jinnerFor 
 	
 	notMax:
-	li $v0, 4 
-	la $a0, check3 
-	syscall 
+	 
 	###
 	addi $t1, $t1,1
 	#addi $s3, $s3 -1
@@ -260,21 +253,31 @@ li $v0, 4
 	sw $t2,0($t7)
 	###
 	addi $t0,$t0,1
-	addi $t4 , $s0,-1
+	#addi $t4 , $s0,-1
 	
 	  # check
-	li $v0, 1 
-	move $a0, $t0
-	syscall
+	#li $v0, 1 
+	#move $a0, $t0
+	#syscall
 	
 	blt $t0,$t4, oFor	
 	
 	Exit : # kills loops
+	
+	lw $t0, sorted($zero)
+	addi $t1 ,$zero, 4
+	lw $t2, sorted($t1)
+	
+	bgt $t2, $t0, else 
+	else:
+	sw $t0, sorted($t1)
+	sw $t2, sorted($zero)
+	
 	jr $ra
 	
     
 	
-	jr $ra
+
 
 	
 # calcSum takes in an array and its size as arguments.
