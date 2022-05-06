@@ -1,3 +1,4 @@
+   
 .data 
 
 orig: .space 100	# In terms of bytes (25 elements * 4 bytes each)
@@ -10,8 +11,11 @@ str3: .asciiz "Sorted scores (in descending order): "
 str4: .asciiz "Enter the number of (lowest) scores to drop: "
 str5: .asciiz "Average (rounded up) with dropped scores removed: "
 space: .asciiz " "
+check1:.asciiz "outer loop"
+check2: .asciiz "inner loop "
+check3: .asciiz " not max "
+
 newline: .asciiz "\n"
-zero_branch: .asciiz "branched to zero from ble \n"
 
 .text 
 
@@ -35,6 +39,9 @@ main:
 	move $t0, $0
 	la $s1, orig	# $s1 = orig
 	la $s2, sorted	# $s2 = sorted 
+	#mul $s3 , $s0, 4 # Number of bytes we need determined by the user
+	move $s3,$s0
+
 	
 loop_in:
 	li $v0, 4 
@@ -56,14 +63,14 @@ loop_in:
 	syscall
 	move $a0, $s1	# More efficient than la $a0, orig
 	move $a1, $s0
-	#addi $a3, $zero, 0 # 
+	addi $a3, $zero, 0 # 
 	jal printArray	# Print original scores
 	
 	li $v0, 4 
 	la $a0, str3 
 	syscall 
 	move $a0, $s2	# More efficient than la $a0, sorted
-	#addi $a3, $zero, 1
+	addi $a3, $zero, 1
 	jal printArray	# Print sorted scores
 	
 	li $v0, 4 
@@ -73,28 +80,36 @@ loop_in:
 	syscall
 
 	move $a1, $v0
-	sub $a1, $s0, $a1	# numScores - drop 
-	move $a0, $s1 # CHANGE BACK TO S2, S2 IS THE SORTED ARRAY
+	sub $a1, $s0, $a1	# numScores - drop
+	move $a0, $s2
 	jal calcSum	# Call calcSum to RECURSIVELY compute the sum of scores that are not dropped
 	
+	#a0 holds the sum 
+	div $a0, $a0,$a1
+	move $t1, $a0
+	
+	li $v0, 4 
+	la $a0, str5
+	syscall 
+	
+	li $v0, 1 
+	move $a0, $t1
+	syscall
+	
+	
+	
+	
 	# Your code here to compute average and print it
-	#Divide the return sum here
-	#use a1 to divide
+	#move $a0, $v0 #save the return value in a0
+	#add $v0, $v0, 0
+	#li $v0, 1
+	#move $a0, $v0
+	#syscall 
 	
-	#add $a0, $v0, $zero #move $a0, $v0
-	#la $v0, 1
-	#syscall
-	
-	#move return value($v0) into temp register
-	#move 
-
-	#j end #might need an end
-	
-		#This is the END of the program
-		lw $ra, 0($sp)
-		addi $sp, $sp, 4 #used to be 4 - # Popping the stack frame
-		li $v0, 10 
-		syscall
+	lw $ra, 0($sp)# poppin the stack
+	addi $sp, $sp 4
+	li $v0, 10 
+	syscall
 	
 	
 # printList takes in an array and its size as arguments. 
@@ -103,11 +118,8 @@ loop_in:
 printArray:
 	move $t7, $a0 # Storing a0(address of the array) into a temporary register
 	li $t0, 0 # Using t0 for i
-	#move $t5, $s0
-	#beq $t5, $zero, zero
 	
 printloop:
-	#beq $s0, $zero, zero
 	bge $t0, $a1, exit_printloop #if i >= length of array stop the loop
 
 	lw $t5, ($t7) #load content of array at t7 index
@@ -125,11 +137,7 @@ printloop:
 	addi $t0, $t0, 1 #increase i by 1
 	
 	j printloop
-
-#zero:
-	#li $v0, 10
-	#syscall
-	#jr $ra
+	
 
 exit_printloop:
 	# Print new line after program finishes printing the array
@@ -192,85 +200,139 @@ exit_printloop:
 # It performs SELECTION sort in descending order and populates the sorted array
 selSort:
 	# Your implementation of selSort here
+	# Your implementation of selSort here
+	addi $t4, $zero, 0 #set $t4 to 0 
+	addi $t7, $s3, 4 # length-1  
+	move $a2,$s3
+	mul $s3,$s3,4
+
+	
+	matchArr: # coppies orginal array into sorted  array to be able to sort
+	beq $t4,$s3, sort
+	 # calls loop
+	lw $t6, orig($t4)
+	sw $t6, sorted($t4)
+	addi $t4,$t4,4
+	
+	j matchArr
+	
+
+	
+sort:
+	move $t0, $zero #set $t0 to 0  i =0
+	move $s3,$a2 # restoring s3 to original value
+      
+      oFor:
+
+	addi $t1,$t0,1 #j =i+1
+	move  $t5,$t0 # max stored
+	
+	innerFor:
+	
+	###
+	sll $t6,$t0,2
+	sll $t7,$t1,2
+	add $t6, $s2,$t6
+	add $t7, $s2,$t7
+	lw $t2,0($t6)
+	lw $t3, 0($t7)
+
+	blt $t3,$t2 , notMax
+	move $t5, $t1 #max INDEX
+	#addi $t1, $t1, 1
+	# jinnerFor 
+	
+	notMax:
+	 
+	###
+	addi $t1, $t1,1
+	#addi $s3, $s3 -1
+	blt $t1, $s0, innerFor
+
+	### swap
+	sll  $t2,$t0 ,2
+	add $t2,$t2,$s2
+	lw $t2,0($t2)#loads value at i
+
+	sll  $t3,$t5 ,2 #values not index
+	add $t3,$t3,$s2
+	lw $t3,0($t3) #loads MAX VALUE
+
+
+	sll $t6,$t0,2# values not index
+	add $t6,$s2,$t6
+	sw $t3,0($t6)
+
+	sll $t7,$t5,2# values not index
+	add $t7,$s2,$t7
+	sw $t2,0($t7)
+	###
+	addi $t0,$t0,1
+	#addi $t4 , $s0,-1
+	
+	  # check
+	#li $v0, 1 
+	#move $a0, $t0
+	#syscall
+	
+	blt $t0,$t4, oFor	
+	
+	
+	Exit : # kills loops
+	
+	lw $t0, sorted($zero)
+	addi $t1 ,$zero, 4
+	lw $t2, sorted($t1)
+	
+	bgt $t2, $t0, else 
+	else:
+	sw $t0, sorted($t1)
+	sw $t2, sorted($zero)
 	
 	jr $ra
+	
+    
+	
 
 
+	
 # calcSum takes in an array and its size as arguments.
 # It RECURSIVELY computes and returns the sum of elements in the array.
 # Note: you MUST NOT use iterative approach in this function.
-calcSum:   #calcsum should be treated as main
+calcSum:  
+	
+	#a1 =total length of scores in sorted to add up and find the average 
 
-#####
-# We might only need to back up the stack pointer by 8 since we're saving 2 return values 
-#####
-	move $t3, $a1
-	mul $t3, $t3, -4
+	 mul $t0, $a1, 4 #multiplies by 4 for byte width
+	 addi $t0,$t0,-4
+	 addi $sp,$sp,-4# backs up the stack enough to fit the remaining scores
+	  
+	  #clear temp registers
+	  
+	  addi $t1,$zero,0 #clears temp
+	  addi $t2,$zero,0 #clear temp
+	  li $t3,-4
+	  
+	  
 	
-	#print integer
-	li $v0, 1
-	move $a0, $t3 # This is the value we should move the stack pointer by
-	syscall 
-	# print newline
-	li $v0 , 4
-	la $a0, newline
-	syscall
-	
-	add $sp, $sp, $t3 # Back up the stack pointer by $t3
-	
-	sw $ra, 0($sp)	
-	
-	ble $t3, $zero, return_zero
-	
-	sw $a0, 4($sp) 	
-	# TPS 2 #11 (Prepare new input argument, i.e. m - 2)
-	addi $a0, $a0, -2
-	
-	
-	jal recursion	# Call recursion(m - 2)
+	 recurse:
+	 beq $t0,$t3,fExit # checks if 0
+
+	 
+	 lw $t2, sorted($t0)
+	 add $t1, $t1,$t2
+	  sw $t1, 0($sp)
+	 
+	 
+	addi $t0,$t0,-4 #subtracts length
+	j recurse 
 	
 	
-return_zero:
-	# print newline
-	li $v0 , 4
-	la $a0, zero_branch
-	syscall
+	fExit :
 	
-	# returning zero
-	li $v0, 0
+	
+	move $a0,$t1
+	#lw $t1 ,0($sp)
+	
+	 
 	jr $ra
-	
-	# End of recursion function	
-	
-# Implementing recursion
-#recursion:
-	#addi $sp, $sp, -100 # Push stack frame for local storage
-	
-	#sw $ra, 0($sp)	
-	
-	#addi $t0, $a0, 1 # Might have to add by 4    #plus one might be the arr[len -1]
-	#ble $t0, $zero, not_zero # Might have to jump to recursion again 
-	
-	#addi $v0, $zero, 0 #update the returning value
-	#j end_recur
-#not_zero:
-	#sw $a0, 4($sp) 	
-	# TPS 2 #11 (Prepare new input argument, i.e. m - 2)
-	#addi $a0, $a0, -1
-	
-	#jal recursion	# Call recursion(m - 2)
-
-	# return 0 if len = 0
-	#addi $v0, $zero, 0 #same thing as loading an immediate
-	#jr $ra
-	#j end_recur
-	
-#end_recur:	
-	
-	# TPS 2 #15 
-	#lw $ra, 0($sp)
-
-	#addi $sp, $sp, 100	# Pop stack frame 
-	#jr $ra
-	
-
