@@ -262,6 +262,7 @@ move $t0, $zero #set $t0 to 0  i =0
 	
 	blt $t0,$t4, oFor	
 	
+	
 	Exit : # kills loops
 	
 	lw $t0, sorted($zero)
@@ -284,59 +285,40 @@ move $t0, $zero #set $t0 to 0  i =0
 # It RECURSIVELY computes and returns the sum of elements in the array.
 # Note: you MUST NOT use iterative approach in this function.
 calcSum:  
-	#addi $sp, $sp, -100
-	#sw $s0, 0($sp)    # save s0 because we overwrite it
-        #sw $ra, 4($sp)    # save $ra because jal overwrites it
+	
+	#a1 =total length of scores in sorted to add up and find the average 
 
-	#beq $a1, $zero, basecase
-	#addi $t0, $a1, -1
-	#sll $t0, $t0, 2
-	#add $t0, $t0, $a0
-	#lw $s0, 0($t0)       # s0 = sorted[size-1]
-	#addi $a1, $a1, -1    # set arguments
-	#jal calcSum          # call calcSum(arr, size - 1)
+	 mul $t0, $a1, 4 #multiplies by 4 for byte width
+	 addi $t0,$t0,-4
+	  addi $sp,$sp,-4# backs up the stack enough to fit the remaining scores
+	  
+	  #clear temp registers
+	  
+	  addi $t1,$zero,0 #clears temp
+	  addi $t2,$zero,0 #clear temp
+	  li $t3,-4
+	  
+	  
 	
-	#add $s0, $v0, $s0   # s0 = s0 + sum(arr,size-1)
-	#move $v0, $s0        # put result in v0
-	
-	#j sum_end
+	 recurse:
+	 beq $t0,$t3,fExit # checks if 0
 
-#basecase: 
-	#add $v0, $zero, 0   # put result in v0
-
-#sum_end: 
-	#lw $s0, 0($sp)    # restore $s0
-	#lw $ra, 4($sp)      # restore $ra
-	#addi $sp, $sp, 100
-	#jr $ra
-	#move $t5, $s0 # Use t5 for len
-	#mul $t5, $t5, 4 #size in bytes
-	
-	#slt $t6, $t5, $zero 
-	#beq $t5, $t6, finalsum
-
-	#addi $t5, $t5, -4
+	 
+	 lw $t2, sorted($t0)
+	 add $t1, $t1,$t2
+	  sw $t1, 0($sp)
+	 
+	 
+	addi $t0,$t0,-4 #subtracts length
+	j recurse 
 	
 	
-	#j calcSum
-	#li $v0, 1
-	#move $a0, $t5
-	#syscall
-	# Your implementation of calcSum here
-	#bgt $t5, $s0, finalsum
+	fExit :
+	li $v0, 1 
+	move $a0, $t1
+	syscall
 	
-	#li $t5, 5          # this is my representation of "i"
-	#la $t6, orig
+	move $a0,$t1
 	
-	#mul $t7, $t7, 4    # scale by 4
-	#addu $t7, $t7, $t6 # add offset and base together
-	#lw $t7, ($t7)      # fetch the data
-	
-	#li $v0,1 
-	#move $a0, $t7
-	#syscall
-	
-#finalsum:
-	#li $v0, 10
-	#syscall 
+	 
 	jr $ra
