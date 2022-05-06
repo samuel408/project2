@@ -11,9 +11,9 @@ str3: .asciiz "Sorted scores (in descending order): "
 str4: .asciiz "Enter the number of (lowest) scores to drop: "
 str5: .asciiz "Average (rounded up) with dropped scores removed: "
 space: .asciiz " "
-check1:.asciiz "outer loop"
-check2: .asciiz "inner loop "
-check3: .asciiz " not max "
+#check1:.asciiz "outer loop"
+#check2: .asciiz "inner loop "
+#check3: .asciiz " not max "
 
 newline: .asciiz "\n"
 
