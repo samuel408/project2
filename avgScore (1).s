@@ -284,7 +284,11 @@ move $t0, $zero #set $t0 to 0  i =0
 	addi $t1 ,$zero, 4
 	lw $t2, sorted($t1)
 	
-	bgt $t2, $t0, else 
+	bgt $t2, $t0, else
+	
+		jr $ra
+	
+	
 	else:
 	sw $t0, sorted($t1)
 	sw $t2, sorted($zero)
