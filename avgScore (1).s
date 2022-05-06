@@ -85,6 +85,21 @@ loop_in:
 	move $a0, $s2
 	jal calcSum	# Call calcSum to RECURSIVELY compute the sum of scores that are not dropped
 	
+	#a0 holds the sum 
+	div $a0, $a0,$a1
+	move $t1, $a0
+	
+	li $v0, 4 
+	la $a0, str5
+	syscall 
+	
+	li $v0, 1 
+	move $a0, $t1
+	syscall
+	
+	
+	
+	
 	# Your code here to compute average and print it
 	#move $a0, $v0 #save the return value in a0
 	#add $v0, $v0, 0
@@ -92,7 +107,7 @@ loop_in:
 	#move $a0, $v0
 	#syscall 
 	
-	lw $ra, 0($sp)
+	lw $ra, 0($sp)# poppin the stack
 	addi $sp, $sp 4
 	li $v0, 10 
 	syscall
@@ -314,11 +329,10 @@ calcSum:
 	
 	
 	fExit :
-	li $v0, 1 
-	move $a0, $t1
-	syscall
+	
 	
 	move $a0,$t1
+	#lw $t1 ,0($sp)
 	
 	 
 	jr $ra
