@@ -72,21 +72,28 @@ loop_in:
 	syscall
 
 	move $a1, $v0
-	sub $a1, $s0, $a1	# numScores - drop
-	move $a0, $s1 #CHANGE BACK TO S2
+	sub $a1, $s0, $a1	# numScores - drop 
+	move $a0, $s1 # CHANGE BACK TO S2, S2 IS THE SORTED ARRAY
 	jal calcSum	# Call calcSum to RECURSIVELY compute the sum of scores that are not dropped
 	
 	# Your code here to compute average and print it
-	#move $a0, $v0 #save the return value in a0
-	#add $v0, $v0, 0
-	#li $v0, 1
-	#move $a0, $v0
-	#syscall 
+	#Divide the return sum here
+	#use a1 to divide
 	
-	lw $ra, 0($sp)
-	addi $sp, $sp 4
-	li $v0, 10 
-	syscall
+	#add $a0, $v0, $zero #move $a0, $v0
+	#la $v0, 1
+	#syscall
+	
+	#move return value($v0) into temp register
+	#move 
+
+	#j end #might need an end
+	
+		#This is the END of the program
+		lw $ra, 0($sp)
+		addi $sp, $sp, 4 #used to be 4 - # Popping the stack frame
+		li $v0, 10 
+		syscall
 	
 	
 # printList takes in an array and its size as arguments. 
@@ -187,105 +194,64 @@ selSort:
 	
 	jr $ra
 
-	
+
 # calcSum takes in an array and its size as arguments.
 # It RECURSIVELY computes and returns the sum of elements in the array.
 # Note: you MUST NOT use iterative approach in this function.
 calcSum:  
-	#a0 = s1 = address of sorted array
-	#a1 = numScores - drop
+	move $t3, $a1
+	mul $t3, $t3, -4
 	
-	#t0 is a counter
-	#t7 is an index(address)
-	
-	li $t0, 0 #use t0 for the counter
-	move $t3, $a0 #use t7 for the address off array
-	move $t6, $a1 #use t6 for the length
-	
-	#printed length
-	#li $v0, 1
-	#move $a0, $t6
-	#syscall 
-#function: 
-
-	#if length <= 0 return 0
-	#else call recursion with arr and (len - 1) + the current value arr[len-1]
-	#jump to basecase if x=0
-	#returns the sum of elements in the argument array
-	#addi $t6, $t6, -1
-	
-	#ble $t6, $zero, basecase
-	
-recur:
-	beq $t0, $t6, 
-	lw $t2, ($t3) #load content of array at t7 index
-	addi $t3, $t3, 4 #increment counter by 4
-	
+	#print integer
 	li $v0, 1
-	move $a0, $t2
+	move $a0, $t3 # This is the value we should move the stack pointer by
 	syscall 
+	# print newline
+	li $v0 , 4
+	la $a0, newline
+	syscall
 	
-	j recur
+	add $sp, $sp, $t3 # Back up the stack pointer by $t3
 	
+	sw $ra, 0($sp)	
 	
-	#addi $sp, $sp, -100
-	#sw $s0, 0($sp)    # save s0 because we overwrite it
-        #sw $ra, 4($sp)    # save $ra because jal overwrites it
-
-	#beq $a1, $zero, basecase
-	#addi $t0, $a1, -1
-	#sll $t0, $t0, 2
-	#add $t0, $t0, $a0
-	#lw $s0, 0($t0)       # s0 = sorted[size-1]
-	#addi $a1, $a1, -1    # set arguments
-	#jal calcSum          # call calcSum(arr, size - 1)
+	ble $t3, $zero, return_zero
 	
-	#add $s0, $v0, $s0   # s0 = s0 + sum(arr,size-1)
-	#move $v0, $s0        # put result in v0
-	
-	#j sum_end
-
-basecase: 
-	#addi $v0, $zero, 0   # put result in v0
-	li $v0, 1
-	move $a0, $0
-	syscall 
-	
+return_zero:
+	li $v0, 0
 	jr $ra
+	
+	# End of recursion function	
+	
+# Implementing recursion
+#recursion:
+	#addi $sp, $sp, -100 # Push stack frame for local storage
+	
+	#sw $ra, 0($sp)	
+	
+	#addi $t0, $a0, 1 # Might have to add by 4    #plus one might be the arr[len -1]
+	#ble $t0, $zero, not_zero # Might have to jump to recursion again 
+	
+	#addi $v0, $zero, 0 #update the returning value
+	#j end_recur
+#not_zero:
+	#sw $a0, 4($sp) 	
+	# TPS 2 #11 (Prepare new input argument, i.e. m - 2)
+	#addi $a0, $a0, -1
+	
+	#jal recursion	# Call recursion(m - 2)
 
-#sum_end: 
-	#lw $s0, 0($sp)    # restore $s0
-	#lw $ra, 4($sp)      # restore $ra
-	#addi $sp, $sp, 100
+	# return 0 if len = 0
+	#addi $v0, $zero, 0 #same thing as loading an immediate
 	#jr $ra
-	#move $t5, $s0 # Use t5 for len
-	#mul $t5, $t5, 4 #size in bytes
+	#j end_recur
 	
-	#slt $t6, $t5, $zero 
-	#beq $t5, $t6, finalsum
+#end_recur:	
+	
+	# TPS 2 #15 
+	#lw $ra, 0($sp)
 
-	#addi $t5, $t5, -4
+	#addi $sp, $sp, 100	# Pop stack frame 
+	#jr $ra
 	
-	
-	#j calcSum
-	#li $v0, 1
-	#move $a0, $t5
-	#syscall
-	# Your implementation of calcSum here
-	#bgt $t5, $s0, finalsum
-	
-	#li $t5, 5          # this is my representation of "i"
-	#la $t6, orig
-	
-	#mul $t7, $t7, 4    # scale by 4
-	#addu $t7, $t7, $t6 # add offset and base together
-	#lw $t7, ($t7)      # fetch the data
-	
-	#li $v0,1 
-	#move $a0, $t7
-	#syscall
-	
-#finalsum:
-	#li $v0, 10
-	#syscall 
-	jr $ra
+
