@@ -11,6 +11,7 @@ str4: .asciiz "Enter the number of (lowest) scores to drop: "
 str5: .asciiz "Average (rounded up) with dropped scores removed: "
 space: .asciiz " "
 newline: .asciiz "\n"
+zero_branch: .asciiz "branched to zero from ble \n"
 
 .text 
 
@@ -198,7 +199,11 @@ selSort:
 # calcSum takes in an array and its size as arguments.
 # It RECURSIVELY computes and returns the sum of elements in the array.
 # Note: you MUST NOT use iterative approach in this function.
-calcSum:  
+calcSum:   #calcsum should be treated as main
+
+#####
+# We might only need to back up the stack pointer by 8 since we're saving 2 return values 
+#####
 	move $t3, $a1
 	mul $t3, $t3, -4
 	
@@ -217,7 +222,21 @@ calcSum:
 	
 	ble $t3, $zero, return_zero
 	
+	sw $a0, 4($sp) 	
+	# TPS 2 #11 (Prepare new input argument, i.e. m - 2)
+	addi $a0, $a0, -2
+	
+	
+	jal recursion	# Call recursion(m - 2)
+	
+	
 return_zero:
+	# print newline
+	li $v0 , 4
+	la $a0, zero_branch
+	syscall
+	
+	# returning zero
 	li $v0, 0
 	jr $ra
 	
