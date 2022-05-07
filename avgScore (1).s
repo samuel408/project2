@@ -1,5 +1,4 @@
 
-   
 .data 
 
 orig: .space 100	# In terms of bytes (25 elements * 4 bytes each)
@@ -12,10 +11,6 @@ str3: .asciiz "Sorted scores (in descending order): "
 str4: .asciiz "Enter the number of (lowest) scores to drop: "
 str5: .asciiz "Average (rounded up) with dropped scores removed: "
 space: .asciiz " "
-check1:.asciiz "outer loop"
-check2: .asciiz "inner loop "
-check3: .asciiz " not max "
-
 newline: .asciiz "\n"
 
 .text 
@@ -97,16 +92,6 @@ loop_in:
 	move $a0, $t1
 	syscall
 	
-	
-	
-	
-	# Your code here to compute average and print it
-	#move $a0, $v0 #save the return value in a0
-	#add $v0, $v0, 0
-	#li $v0, 1
-	#move $a0, $v0
-	#syscall 
-	
 	lw $ra, 0($sp)# poppin the stack
 	addi $sp, $sp 4
 	li $v0, 10 
@@ -139,7 +124,6 @@ printloop:
 	
 	j printloop
 	
-
 exit_printloop:
 	# Print new line after program finishes printing the array
 	li $v0, 4 
@@ -147,55 +131,6 @@ exit_printloop:
 	syscall 
 	
 	jr $ra
-	
-	# Your implementation of printList here	\
-	
-	#addi $s3, $zero, 20
-	#addi $t4, $zero, 0
-	
-	#bne $a3, $zero, sortedPrint
-	
-#while:
- 	#beq $t4, $s3, exit
-	#lw $t6, orig($t4)
-	#addi $t4, $t4, 4
-
-	#print current number
-	#li $v0,1 
-	#move $a0, $t6
-	#syscall
-
-	# print space
-	#li $v0 , 4
-	#la $a0, space
-	#syscall
-	
-	#j while
-	
-#sortedPrint:
-#While:
-	
- 	#beq $t4,$s3, exit
-	#lw $t6, sorted($t4)
-	#addi $t4,$t4,4
-
-	#print current number
-	#li $v0, 1 
-	#move $a0, $t6
-	#syscall
-
-	# add space
-	#li $v0 , 4
-	#la $a0, space
-	#syscall
-	
-	#j While
-	
-
-	
-
-
-	
 	
 # selSort takes in the number of scores as argument. 
 # It performs SELECTION sort in descending order and populates the sorted array
@@ -216,8 +151,6 @@ selSort:
 	addi $t4,$t4,4
 	
 	j matchArr
-	
-
 	
 sort:
 move $t0, $zero #set $t0 to 0  i =0
@@ -295,11 +228,6 @@ move $t0, $zero #set $t0 to 0  i =0
 	
 	jr $ra
 	
-    
-	
-
-
-	
 # calcSum takes in an array and its size as arguments.
 # It RECURSIVELY computes and returns the sum of elements in the array.
 # Note: you MUST NOT use iterative approach in this function.
@@ -317,26 +245,18 @@ calcSum:
 	  addi $t2,$zero,0 #clear temp
 	  li $t3,-4
 	  
-	  
-	
 	 recurse:
 	 beq $t0,$t3,fExit # checks if 0
 
-	 
 	 lw $t2, sorted($t0)
 	 add $t1, $t1,$t2
 	  sw $t1, 0($sp)
 	 
-	 
 	addi $t0,$t0,-4 #subtracts length
 	j recurse 
 	
-	
 	fExit :
-	
 	
 	move $a0,$t1
 	#lw $t1 ,0($sp)
-	
-	 
-	jr $ra
+	 jr $ra
